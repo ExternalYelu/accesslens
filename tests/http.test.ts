@@ -66,3 +66,49 @@ test("handles Next's normalized loopback URL while retaining Host, scheme, and p
   assert.equal((await handler(normalized("http://127.0.0.1:4000"))).status, 403);
   assert.equal((await handler(normalized("https://127.0.0.1:3000"))).status, 403);
 });
+
+test("streamed analysis reports genuine stages and keeps the slot until inference ends", async () => {
+  let finish: (() => void) | undefined;
+  const waiting = new Promise<void>(resolve => { finish = resolve; });
+  const handler = createAnalysisHandler(async (_bytes, _type, _signal, _client, options) => {
+    options?.onStage?.("observing"); await waiting; return stubResult;
+  }, () => true);
+  const incoming = request(); incoming.headers.set("accept", "application/x-ndjson");
+  const response = await handler(incoming);
+  const reader = response.body!.getReader();
+  assert.equal(response.headers.get("content-type"), "application/x-ndjson");
+  assert.match(new TextDecoder().decode((await reader.read()).value), /observing/);
+  assert.equal((await handler(request())).status, 429);
+  finish!();
+  assert.match(new TextDecoder().decode((await reader.read()).value), /result/);
+  await reader.read();
+  assert.equal((await handler(request())).status, 200);
+});
+
+test("invalid mobility inputs fail before inference; stream errors are sanitized", async () => {
+  let calls = 0;
+  const handler = createAnalysisHandler(async () => { calls++; throw new Error("PRIVATE-DETAIL"); }, () => true);
+  const original = request(); const form = await original.formData();
+  form.append("profile", JSON.stringify({ kind: "wheelchair", measuredWidthCm: -1 }));
+  assert.equal((await handler(new Request(original.url, { method: "POST", headers: { origin: "http://localhost:3000" }, body: form }))).status, 400);
+  assert.equal(calls, 0);
+  const streamed = request(); streamed.headers.set("accept", "application/x-ndjson");
+  const text = await (await handler(streamed)).text();
+  assert.match(text, /PROVIDER_UNAVAILABLE/);
+  assert.ok(!text.includes("PRIVATE-DETAIL"));
+});
+
+test("cancelling the response stream aborts upstream before freeing its slot", async () => {
+  let sawAbort = false;
+  const handler = createAnalysisHandler(async (_bytes, _type, signal, _client, options) => {
+    options?.onStage?.("observing");
+    await new Promise<void>(resolve => signal!.addEventListener("abort", () => { sawAbort = true; resolve(); }, { once: true }));
+    return stubResult;
+  }, () => true);
+  const incoming = request(); incoming.headers.set("accept", "application/x-ndjson");
+  const response = await handler(incoming);
+  const reader = response.body!.getReader();
+  await reader.read(); await reader.cancel();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(sawAbort, true);
+});

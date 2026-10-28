@@ -1,6 +1,6 @@
 import "server-only";
 import type OpenAI from "openai";
-import { decodeMaskToRaster, decodeMaskToRLE, parseImageStream, recordsOfKind, ResponsesStreamError, ResponsesStreamRefusalError } from "@meta-sam/parser";
+import { decodeMaskToRaster, decodeMaskToRLE, decodeMaskToSVGPath, parseImageStream, recordsOfKind, ResponsesStreamError, ResponsesStreamRefusalError } from "@meta-sam/parser";
 import type { ResponsesEvent } from "@meta-sam/parser";
 import { AnalysisError } from "../analysis/errors";
 import type { PreparedImage } from "../analysis/image";
@@ -18,11 +18,13 @@ async function* guardedEvents(events: AsyncIterable<WireEvent>, image: ImageSize
     if (candidate.length > MAX_SEGMENTATION_CHARACTERS) throw new AnalysisError("INVALID_OUTPUT");
     const headers = [...candidate.matchAll(/data=(\d+),(\d+),/g)];
     if (headers.length > 32) throw new AnalysisError("INVALID_OUTPUT");
+    let totalPixels = 0;
     for (const header of headers) {
       const height = Number(header[1]);
       const width = Number(header[2]);
+      totalPixels += height * width;
       if (!Number.isSafeInteger(height * width) || height < 1 || width < 1
-        || height > image.height || width > image.width || height * width > image.width * image.height) {
+        || height > image.height || width > image.width || height * width > image.width * image.height || totalPixels > 8_000_000) {
         throw new AnalysisError("INVALID_OUTPUT");
       }
     }
@@ -57,6 +59,7 @@ export async function parseSegmentation(events: AsyncIterable<WireEvent>, image:
       throw new AnalysisError("INVALID_OUTPUT");
     }
     const seen = new Set<string>();
+    let totalPathCharacters = 0;
     const objects = masks.map(record => {
       const { mask, bounds, objectId } = record;
       if (seen.has(objectId) || (record.frame?.frameIndex ?? 0) !== 0) throw new AnalysisError("INVALID_OUTPUT");
@@ -72,7 +75,10 @@ export async function parseSegmentation(events: AsyncIterable<WireEvent>, image:
       const raster = decodeMaskToRaster(mask);
       let areaPixels = 0;
       for (const pixel of raster) areaPixels += pixel;
-      return { objectId, bounds, confidence: record.confidence ?? null, areaPixels, mask: decodeMaskToRLE(mask) };
+      const svgPath = decodeMaskToSVGPath(mask);
+      totalPathCharacters += svgPath.length;
+      if (totalPathCharacters > 1_000_000) throw new AnalysisError("INVALID_OUTPUT");
+      return { objectId, bounds, confidence: record.confidence ?? null, areaPixels, mask: decodeMaskToRLE(mask), svgPath };
     });
     return { status: objects.length ? "completed" as const : "no_matches" as const, objects };
   } catch (error) {

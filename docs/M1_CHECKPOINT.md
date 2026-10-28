@@ -2,6 +2,8 @@
 
 Completed October 27, 2026, Eastern time. No commit or push has been made automatically.
 
+This is a historical checkpoint. For the current workspace and commit instructions, see [M2](M2_CHECKPOINT.md).
+
 ## Implemented and verified
 
 - Server-only Meta SDK configuration, strict Spark response schema with local validation, and one bounded SAM concept request.
@@ -16,9 +18,9 @@ The homepage is still the starter page. This milestone provides the tested backe
 
 ## Evidence
 
-[meta-contract.json](evidence/meta-contract.json) contains the latest successful live result using the original [synthetic diagram](../tests/fixtures/contract-scene.svg). Its UTC timestamp `2026-10-28T02:13:45.914Z` is October 27 at 10:13:45 PM EDT.
+[meta-contract.json](evidence/meta-contract.json) contains the latest successful local result and may be refreshed by `npm run smoke:meta`. The original [HTTP result at the M1 commit](https://github.com/ExternalYelu/accesslens/blob/47e590a159b824968cf6e34beca68ba61917f82e/docs/evidence/meta-contract.json) used the original [synthetic diagram](../tests/fixtures/contract-scene.svg), with UTC timestamp `2026-10-28T02:13:45.914Z` (October 27 at 10:13:45 PM EDT). The user subsequently verified an additional successful CLI run: 3942 ms Spark, 379 ms SAM, one mask; that refreshed file is preserved in M2.
 
-Latest HTTP-backed run:
+Initial HTTP-backed run:
 
 | Check | Observed result |
 | --- | --- |

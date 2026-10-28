@@ -38,3 +38,8 @@ export class AnalysisError extends Error {
 export function publicError(error: unknown): AnalysisError {
   return error instanceof AnalysisError ? error : new AnalysisError("PROVIDER_UNAVAILABLE");
 }
+
+export function errorFromCode(code: unknown): AnalysisError {
+  return typeof code === "string" && Object.hasOwn(definitions, code)
+    ? new AnalysisError(code as ErrorCode) : new AnalysisError("PROVIDER_UNAVAILABLE");
+}

@@ -1,6 +1,6 @@
 # AccessLens project brief
 
-Planning snapshot and M1 update: October 27, 2026, America/Detroit. Capabilities below are planned unless explicitly marked implemented. M1 is now implemented and verified; see [M1 checkpoint](M1_CHECKPOINT.md) for evidence and limitations.
+Planning snapshot and M2 update: October 27, 2026, America/Detroit. M1 is verified; M2 capture/review is implemented and browser-tested. Physical-phone and assistive-technology checks remain pending. See [M1](M1_CHECKPOINT.md) and [M2](M2_CHECKPOINT.md) checkpoints for evidence and limitations.
 
 ## Mission
 
@@ -46,7 +46,7 @@ The compelling demo is a blocked modeled route becoming connected after a legiti
 
 The development-only `POST /api/analyze` endpoint validates consent/origin and images, calls Muse Spark with strict JSON Schema output, validates observations locally, and queries SAM once for an observed concept. It returns decoded image masks, provenance, and limitations. Live access, image transport, the dotted SAM ID, and strict Spark output are verified. Tests and production build pass. Raw images/provider errors are not logged or retained by application code; provider-side retention remains a separate policy question.
 
-The concept query records its source observation without claiming one-to-one identity for all returned masks. Frontend capture, reviewed-plan geometry, route computation, and simulation remain unimplemented. The original audit table records the pre-implementation state.
+The concept query records its source observation without claiming one-to-one identity for all returned masks. M2 now adds local capture/upload preparation, mobility preferences, explicit consent, real streamed stages, image/mask overlays, local corrections, and recorded-example exploration. User mask associations are explicit and do not replace raw evidence. Reviewed-plan geometry, route computation, and simulation remain unimplemented. The original audit table records the pre-implementation state.
 
 ## Architecture
 
@@ -124,7 +124,7 @@ Compare the same endpoints, profile, units, uncertainty policy, and planner vers
 - Result: connected/blocked/insufficient-information, supported metrics, assumptions, evidence links, and before/after scenario IDs.
 - Run metadata: model/provider, prompt/schema versions, sanitized request identifier, elapsed time, usage when reported, outcome. No raw private payload logging.
 
-These are planned contracts, not types currently in the repository. Final schemas should follow live provider evidence and meaningful tests.
+The image-evidence and mobility-preference contracts are implemented as `accesslens-evidence-v2` in `src/lib/analysis/contract.ts`, with shared server/client validation. Plan/scenario/route contracts remain planned. Final geometry schemas must follow explicit inputs and meaningful tests.
 
 ## Scope priorities
 

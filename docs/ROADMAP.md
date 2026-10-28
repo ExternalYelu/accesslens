@@ -1,6 +1,6 @@
 # AccessLens delivery roadmap
 
-Planning date and M1 update: October 27, 2026, Eastern time. M0 and M1 are complete; M2 onward remains planned. Dates are targets; acceptance evidence determines completion.
+Planning date and M2 update: October 27, 2026, Eastern time. M0–M1 are complete. M2 is implemented and browser-verified; physical-phone/assistive-technology checks remain pending. M3 onward is planned. Dates are targets; acceptance evidence determines completion.
 
 ## Delivery priorities
 
@@ -61,6 +61,8 @@ Acceptance:
 - Owned examples are clearly labeled with provenance; replay data is visibly marked as recorded.
 
 Verification: at least one phone capture/upload, desktop upload, denied camera, invalid/oversized file, request cancellation, and retry; automated input/response validation; keyboard and screen-reader smoke pass.
+
+Implementation evidence: [M2 checkpoint](M2_CHECKPOINT.md). Desktop upload, simulated camera capture/denial, EXIF rotation, local corruption rejection, live Meta rendering, recorded evidence, corrections, cancellation/stale-response handling, and 390px mobile layout were checked in Playwright. Thirty-five offline tests, typecheck, lint, and production build pass. Physical-phone capture/upload and real screen-reader testing remain pending; do not call browser emulation a hardware or assistive-technology test.
 
 ## M3 — explicit geometry and plan review
 
@@ -147,6 +149,7 @@ Suggested video structure (180 seconds maximum pending form confirmation):
 | --- | --- | --- |
 | M0 | Complete | Repo audit; documentation checks and diff check; starter lint/typecheck |
 | M1 | Complete | Live Spark + SAM, decoded mask, HTTP contract, 26 tests, lint/typecheck/build; see checkpoint |
-| M2–M7 | Planned | UI, geometry, simulation, deployment, and submission remain outstanding |
+| M2 | Implemented; browser verified | 35 tests, live UI, upload/camera/error/review checks; physical-phone and real screen-reader checks pending |
+| M3–M7 | Planned | Geometry, simulation, deployment, and submission remain outstanding |
 
 Update this ledger with actual check results, commits, blockers, and deployed URLs after each milestone. Never mark complete from plans alone.

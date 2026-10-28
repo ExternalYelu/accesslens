@@ -2,6 +2,7 @@ import "server-only";
 import { analyzeImage } from "./analyze";
 import { AnalysisError, publicError } from "./errors";
 import { MAX_IMAGE_BYTES } from "./image";
+import { DEFAULT_PROFILE, mobilityProfileSchema, type AnalysisEvent } from "./contract";
 
 const MAX_BODY_BYTES = MAX_IMAGE_BYTES + 64 * 1024;
 
@@ -70,7 +71,39 @@ export function createAnalysisHandler(
       if (!(file instanceof File) || form.getAll("image").length !== 1 || form.getAll("consent").length !== 1) {
         throw new AnalysisError("INVALID_INPUT");
       }
-      const result = await analyze(new Uint8Array(await file.arrayBuffer()), file.type, request.signal);
+      let profile = DEFAULT_PROFILE;
+      if (form.has("profile")) {
+        try {
+          if (form.getAll("profile").length !== 1 || typeof form.get("profile") !== "string") throw new Error();
+          profile = mobilityProfileSchema.parse(JSON.parse(String(form.get("profile"))));
+        } catch { throw new AnalysisError("INVALID_INPUT"); }
+      }
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      if (request.headers.get("accept") === "application/x-ndjson") {
+        const abort = new AbortController();
+        const signal = AbortSignal.any([request.signal, abort.signal]);
+        let closed = false;
+        const body = new ReadableStream<Uint8Array>({
+          start(controller) {
+            const send = (event: AnalysisEvent) => {
+              if (!closed && !signal.aborted) controller.enqueue(new TextEncoder().encode(`${JSON.stringify(event)}\n`));
+            };
+            void analyze(bytes, file.type, signal, undefined, { mobilityProfile: profile, onStage: stage => send({ type: "stage", stage }) })
+              .then(result => send({ type: "result", result }))
+              .catch(error => {
+                const safe = publicError(error);
+                send({ type: "error", code: safe.code, message: safe.message });
+              }).finally(() => {
+                active = false;
+                if (!closed) { closed = true; controller.close(); }
+              });
+          },
+          cancel() { closed = true; abort.abort(); },
+        });
+        acquired = false; // Stream owns the concurrency slot until upstream stops.
+        return new Response(body, { headers: { ...headers, "Content-Type": "application/x-ndjson", "X-Accel-Buffering": "no" } });
+      }
+      const result = await analyze(bytes, file.type, request.signal, undefined, { mobilityProfile: profile });
       return Response.json(result, { headers });
     } catch (error) {
       const safe = publicError(error);

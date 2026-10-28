@@ -1,6 +1,5 @@
 {
-  "performedAt": "2026-10-28T02:13:45.914Z",
-  "transport": "Next.js development HTTP /api/analyze",
+  "performedAt": "2026-10-28T02:23:18.455Z",
   "fixture": {
     "path": "tests/fixtures/contract-scene.svg",
     "sha256": "2fa79d5e26a1475f9675794c6d25fb3f47c162eb37bff0036d507347e418e20e",
@@ -11,12 +10,6 @@
     "spark": 1,
     "sam": 1,
     "automaticRetries": 0
-  },
-  "httpChecks": {
-    "crossOrigin": 403,
-    "missingConsent": 400,
-    "success": 200,
-    "cacheControl": "no-store"
   },
   "result": {
     "version": "accesslens-evidence-v1",
@@ -29,18 +22,18 @@
       "normalizedType": "image/jpeg"
     },
     "scene": {
-      "summary": "The image is a simple diagram showing a light rectangular field with a dark border, containing a solid red square on the left and a taller solid blue rectangle on the right.",
+      "summary": "The image is a simple diagram with a light background enclosed by a dark border, containing a red square on the left and a taller blue vertical rectangle on the right.",
       "objects": [
         {
           "id": "object-1",
           "label": "solid red square on left",
           "concept": "red square",
-          "visibleEvidence": "solid red square shape centered left on light background",
+          "visibleEvidence": "Solid red square shape positioned left of center on light background.",
           "box": {
-            "xMin": 0.199,
-            "yMin": 0.367,
-            "xMax": 0.41,
-            "yMax": 0.65
+            "xMin": 0.2,
+            "yMin": 0.37,
+            "xMax": 0.406,
+            "yMax": 0.645
           },
           "movability": "unknown"
         },
@@ -48,48 +41,49 @@
           "id": "object-2",
           "label": "solid blue vertical rectangle on right",
           "concept": "blue rectangle",
-          "visibleEvidence": "solid blue tall vertical rectangle positioned right of center on light background",
+          "visibleEvidence": "Solid blue tall vertical rectangle positioned right of center on light background.",
           "box": {
-            "xMin": 0.632,
-            "yMin": 0.263,
-            "xMax": 0.83,
+            "xMin": 0.592,
+            "yMin": 0.265,
+            "xMax": 0.786,
             "yMax": 0.732
           },
           "movability": "unknown"
         },
         {
           "id": "object-3",
-          "label": "light rectangular background with dark border",
-          "concept": "framed background",
-          "visibleEvidence": "off-white rectangular field enclosed by thin dark border occupying full image",
+          "label": "dark border around image",
+          "concept": "rectangular border",
+          "visibleEvidence": "Thin dark rectangular border enclosing the light background area.",
           "box": {
             "xMin": 0.04,
-            "yMin": 0.055,
-            "xMax": 0.962,
-            "yMax": 0.947
+            "yMin": 0.054,
+            "xMax": 0.96,
+            "yMax": 0.944
           },
-          "movability": "fixed"
+          "movability": "unknown"
         }
       ],
       "unknowns": [
-        "Image is a diagram, not a photograph of a physical space",
-        "No depth, scale, texture, or real-world dimensions visible",
-        "No floor, surroundings, or additional context visible"
+        "Image is a diagram, not a photograph of a physical space.",
+        "Missing depth and scale information.",
+        "Hidden floor and ground-plane not visible.",
+        "No real-world dimensions can be determined."
       ]
     },
     "provenance": {
       "provider": "meta",
       "requestedModel": "muse-spark-1.3",
       "resolvedModel": "muse-spark-1.3",
-      "responseId": "resp_6ae15a584daa6407de49461a",
-      "requestId": "e74c78a5-6223-401d-b8c2-3a5a402e56ea",
+      "responseId": "resp_6ae15c96f84b9e77b4a84c8d",
+      "requestId": "49e21b70-3a31-4d1d-a7d1-47fbd43b7ff7",
       "schemaVersion": "scene-observations-v1",
       "promptVersion": "visual-evidence-v1",
-      "elapsedMs": 3293,
+      "elapsedMs": 3942,
       "usage": {
         "inputTokens": 940,
-        "outputTokens": 602,
-        "totalTokens": 1542
+        "outputTokens": 604,
+        "totalTokens": 1544
       },
       "outputMode": "json_schema",
       "storeRequested": false
@@ -124,10 +118,10 @@
         "provider": "meta",
         "requestedModel": "sam-3.1",
         "resolvedModel": "sam-3.1",
-        "responseId": "resp_6ae15a59dbc8684b39fa4765",
-        "requestId": "da6f63fd-5afa-419e-b211-c42cde997b7c",
+        "responseId": "resp_6ae15c9627c3b1b498e044fc",
+        "requestId": "00dc6328-7848-4827-984c-96026d6fbeca",
         "parser": "@meta-sam/parser@0.1.0",
-        "elapsedMs": 1332,
+        "elapsedMs": 379,
         "usage": {
           "inputTokens": 0,
           "outputTokens": 0,

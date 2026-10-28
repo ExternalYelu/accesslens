@@ -1,10 +1,10 @@
 # AccessLens setup and user handoffs
 
-As of October 27, 2026. M1 is verified; the key is privately configured and live Meta calls work. See [M1 checkpoint](M1_CHECKPOINT.md) for current commit/push steps, including the uncommitted M0 documents. Commands below are instructions unless recorded as executed.
+As of October 27, 2026. M1 is committed, and the user verified its live smoke test. M2 is now implemented and browser-verified. See [M2 checkpoint](M2_CHECKPOINT.md) for current run/commit/push instructions. Commands below are historical milestone instructions unless recorded as executed.
 
 ## What is needed next
 
-The Meta key is configured and working. No additional provider credential is needed for M2. Baseten and Modal credits are approved according to the user, but neither is a prerequisite for the first complete product loop.
+The Meta key is configured and working. No additional provider credential is needed for M2 or the M3 geometry work. Try the local recorded example first, then an owned photo if desired. Phone and real screen-reader field checks remain pending. Baseten and Modal credits are approved according to the user, but neither is a prerequisite for the first complete product loop.
 
 | When | User action | Credential or account | Completion signal |
 | --- | --- | --- | --- |
